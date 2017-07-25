@@ -1,9 +1,15 @@
 from Users import *
+from Portfolios import *
+import codecs, json
 
 def main():
-	us = []
-	for i in range(6):
+
+	users = []
+	portfolios = []
+	
+	for i in range(500):
 		us.append(Users())
+		us.append(Portfolios())
 
 	with open("dis.txt","w") as out:
 		for i in range(len(us)):
@@ -12,3 +18,4 @@ def main():
 				out.write(str(num) + " ")
 
 main()
+

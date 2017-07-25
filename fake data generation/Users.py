@@ -1,13 +1,13 @@
-import numpy
+import numpy as np
 
 class Users:
 
 	def __init__(self):
-		self.attributes = abs(numpy.random.randn(10))
+		self.attributes = abs(np.random.randn(10)+5)
 
 	def distanceto(self, otherusers):
 		for i in range(len(otherusers)):
-			yield numpy.dot(self.attributes,otherusers[i].attributes)
+			yield np.dot(self.attributes,otherusers[i].attributes)
 
 	# def normalization(self):
 	# some normalization for
