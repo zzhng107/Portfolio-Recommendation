@@ -3,7 +3,7 @@ import numpy as np
 class Users:
 
 	def __init__(self):
-		self.attributes = abs(np.random.randn(10)+5)
+		self.attributes = (np.random.randn(20))
 
 	def distanceto(self, otherusers):
 		for i in range(len(otherusers)):
