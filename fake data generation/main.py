@@ -37,7 +37,7 @@ def main():
 		portfolios_out.append(list(portfolios[i].portfolios))
 		return_out.append(float(portfolios[i].portfolios_return))
 	
-	data['users'] = users_out
+	data['users_distance'] = users_out
 	data['portfolio'] = portfolios_out
 	data['return'] = return_out
 
