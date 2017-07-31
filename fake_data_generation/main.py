@@ -8,7 +8,7 @@ def main():
 	users = []
 	portfolios = []
 	
-	for i in range(10):
+	for i in range(200):
 
 		users.append(Users())
 		portfolios.append(Portfolios())
@@ -39,15 +39,15 @@ def main():
 	
 	data['users_distance'] = users_out
 	data['portfolio'] = portfolios_out
-	data['return'] = return_out
+	data['portfolio_return'] = return_out
 
 	out = json.dumps(data)
 
-	# with open('result.json', 'w') as fp:
-	# 	json.dump(data, fp)
-	# 	fp.close()
+	with open('../recommendation_visualization/result.json', 'w') as fp:
+		json.dump(data, fp)
+		fp.close()
 
-	return out
+	# return out
 	# customers = {}
 	# for i in range(len(users)):
 	# 		if i != 0:
