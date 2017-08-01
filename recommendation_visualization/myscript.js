@@ -3,7 +3,7 @@
 
 d3.json("result.json", function(data) {
 
-    console.log(data["portfolio_return"]);
+    // console.log(data["portfolio_return"]);
 
     var portfolio_return = data["portfolio_return"];
     var max = d3.max(portfolio_return);
@@ -66,13 +66,35 @@ d3.json("result.json", function(data) {
                 .attr("width", w)
                 .attr("height", h);
 
+    var line = d3.svg.line()
+                     .interpolate("basis") 
+                     .x(function(d){return xScale(d[0]);})
+                     .y(function(d){return yScale(d[1]);});
+
+    var widthofrect = w/jarray.length-20;
+    var heightofrect;
+    svg.selectAll("rect")
+        .data(jarray)
+        .enter().append("rect")  
+        .attr("width", widthofrect)
+        .attr("height", function(d){return d[1]/d3.max(ydata)*(h-100);})
+        .attr("x", function(d){return xScale(d[0])-widthofrect/2;})
+        .attr("y", function(d){return yScale(d[1]);})
+        .attr("fill","skyblue");
+
+    svg.append("path") // Add the valueline path.
+        .attr("class", "line")
+        .attr("d", line(jarray));
+
     svg.selectAll("circle")
      .data(jarray)
      .enter().append("circle")
      .attr("cx",function(d){return xScale(d[0]);})
      .attr("cy",function(d){return yScale(d[1]);})
      .attr("r", 3)
-     .attr("fill", "teal");
+     .attr("fill", "red");
+
+     
 
     svg.append("g")
         .attr("class", "axis")
@@ -81,8 +103,8 @@ d3.json("result.json", function(data) {
 
     svg.append("g")
         .attr("class", "axis")
-        // .attr("transform", "translate(0," + 3*padding + ")")
-        .call(yAxis)
+        .attr("transform", "translate(" + padding + ",0)")
+        .call(yAxis);
 
     });
 
