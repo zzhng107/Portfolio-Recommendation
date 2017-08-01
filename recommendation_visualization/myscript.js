@@ -71,6 +71,19 @@ d3.json("result.json", function(data) {
                      .x(function(d){return xScale(d[0]);})
                      .y(function(d){return yScale(d[1]);});
 
+    var tip = d3.tip()
+		        .attr('class', 'd3-tip')
+		        .attr('id','pie')
+		        .style('transition-duration', '0.75s')
+		        .offset([-10, 0])
+		        .html(function(d) {
+		          // return "<strong>People at this level:</strong> <span style='color:red'>" + d[1] + "</span>";
+		          return "<p>This is a SVG inside a tooltip:</p> <div id='pie'></div> <div id='pieChartDetails'></div>"
+		        });
+
+
+    svg.call(tip);
+
     var widthofrect = w/jarray.length-20;
     var heightofrect;
     svg.selectAll("rect")
@@ -80,19 +93,37 @@ d3.json("result.json", function(data) {
         .attr("height", function(d){return d[1]/d3.max(ydata)*(h-100);})
         .attr("x", function(d){return xScale(d[0])-widthofrect/2;})
         .attr("y", function(d){return yScale(d[1]);})
-        .attr("fill","skyblue");
+        .attr("fill","skyblue")
+        //tooltip part
+        .on('mouseover', function(d){
+        	tip.show();
+        	var tipsvg = d3.select("#pie")
+        				   .append("svg")
+        				   .attr("width", 200)
+ 						   .attr("height", 50);
+
+	       // tipsvg.append("rect")
+	       //   .attr("fill", "steelblue")
+	       //   .attr("y", 10)
+	       //   .attr("width", 10)
+	       //   .attr("height", 30)
+	       //   .transition(100)
+	       //   .duration(100);
+        })
+
+        .on('mouseout', tip.hide);
 
     svg.append("path") // Add the valueline path.
         .attr("class", "line")
         .attr("d", line(jarray));
 
-    svg.selectAll("circle")
-     .data(jarray)
-     .enter().append("circle")
-     .attr("cx",function(d){return xScale(d[0]);})
-     .attr("cy",function(d){return yScale(d[1]);})
-     .attr("r", 3)
-     .attr("fill", "red");
+    // svg.selectAll("circle")
+    //  .data(jarray)
+    //  .enter().append("circle")
+    //  .attr("cx",function(d){return xScale(d[0]);})
+    //  .attr("cy",function(d){return yScale(d[1]);})
+    //  .attr("r", 3)
+    //  .attr("fill", "red");
 
      
 
