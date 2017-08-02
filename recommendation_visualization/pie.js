@@ -611,7 +611,7 @@
 
 
     function ಠ_ಠ() {
-        drawPieChart('pie', 'pieChartDetails', data.pieChart );
+        drawPieChart('pieChart', 'pieChartDetails', data.pieChart );
         //drawLineChart(    'lineChart',    data.lineChart );
     }
 
