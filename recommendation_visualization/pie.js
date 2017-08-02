@@ -1,4 +1,4 @@
-( function() {
+window.onload = function() {
     var data = {
         lineChart : [
             {
@@ -618,7 +618,7 @@
     // yeah, let's kick things off!!!
     ಠ_ಠ();
 
-})();
+};
 
 
 

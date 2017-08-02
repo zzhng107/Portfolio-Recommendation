@@ -3,8 +3,7 @@
 
 d3.json("result.json", function(data) {
 
-    // console.log(data["portfolio_return"]);
-
+    //Data preparation
     var portfolio_return = data["portfolio_return"];
     var max = d3.max(portfolio_return);
     var min = d3.min(portfolio_return);
@@ -14,13 +13,10 @@ d3.json("result.json", function(data) {
     var dxmark = (max-min)/numofsections;
 
     var xdata = Array.apply(null, Array(numofpoints)).map(Number.prototype.valueOf,0);
-
+    var ydata = Array.apply(null, Array(numofpoints)).map(Number.prototype.valueOf,0);
     for (i = 0; i < numofpoints; i++) { 
         xdata[i] = min + i*dxmark;
     }
-
-    var ydata = Array.apply(null, Array(numofpoints)).map(Number.prototype.valueOf,0);
-
     for (i = 0; i < portfolio_return.length; i++) { 
         ydata[~~((portfolio_return[i]-min+0.5*dxmark)/dxmark)] +=1 ;
     }
@@ -33,17 +29,16 @@ d3.json("result.json", function(data) {
       jarray[i] = [xdata[i], ydata[i]];
     }
 
-
+    // Main canvas size
     var w = 900,
         h = 600;
 
-    // scale adjustment
+    // Scale adjustment
     var padding = 50;
 
     var xScale = d3.scale.linear()
                      .domain([0, d3.max(jarray, function(d) { return d[0]; })])
                      .range([padding, w-padding]);
-
     var yScale = d3.scale.linear()
                      .domain([0, d3.max(jarray, function(d) { return d[1]; })])
                      .range([h-padding,padding]);
@@ -60,7 +55,7 @@ d3.json("result.json", function(data) {
                   // .tickFormat(formatPercent);                 
 
 
-    // SVG creation
+    // Drawing
     var svg = d3.select("body")
                 .append("svg")
                 .attr("width", w)
@@ -78,8 +73,10 @@ d3.json("result.json", function(data) {
 		        .offset([-10, 0])
 		        .html(function(d) {
 		          // return "<strong>People at this level:</strong> <span style='color:red'>" + d[1] + "</span>";
-		          return "<p>This is a SVG inside a tooltip:</p>               <div id='pieChart'> <svg id='pieChartSVG'> </svg> </div> <div id='pieChartDetails'></div>"
-		        });
+		          // return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'> <svg id='pieChartcanvas'></svg> </div>"
+                  return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'></div>"
+		        
+                });
 
 
     svg.call(tip);
@@ -97,21 +94,76 @@ d3.json("result.json", function(data) {
         //tooltip part
         .on('mouseover', function(d){
         	tip.show();
-        	// var tipsvg = d3.select("#pieChart")
-        	// 			   .append("svg")
-        	// 			   .attr("width", 200)
- 						  //  .attr("height", 50);
 
-	       // tipsvg.append("rect")
-	       //   .attr("fill", "steelblue")
-	       //   .attr("y", 10)
-	       //   .attr("width", 10)
-	       //   .attr("height", 30)
-	       //   .transition(100)
-	       //   .duration(100);
+        	// var tipsvg = d3.select("#pieChart")
+        		// 		   .append("svg")
+          //                  .attr("id","tipsvg")
+        		// 		   .attr("width", 200)
+ 						   // .attr("height", 50);
+
+	        // tipsvg.append("rect")
+	        //  .attr("fill", "steelblue")
+	        //  .attr("y", 10)
+	        //  .attr("width", 10)
+	        //  .attr("height", 30)
+	        //  .transition(100)
+	        //  .duration(100);
+
+            var width = 400,
+                height = 300,
+                radius = Math.min(width, height) / 2 - 10;
+
+            var pidata = d3.range(10).map(Math.random).sort(d3.descending);
+
+            var color = d3.scale.category20();
+
+            var arc = d3.svg.arc()
+                .outerRadius(radius);
+
+            var pie = d3.layout.pie();
+
+            var svg = d3.select("#pieChart").append("svg")
+                .datum(pidata)
+                .attr("width", width)
+                .attr("height", height)
+              .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            var arcs = svg.selectAll("g.arc")
+                .data(pie)
+              .enter().append("g")
+                .attr("class", "arc");
+
+            arcs.append("path")
+                .attr("fill", function(d, i) { return color(i); })
+              .transition()
+                .ease("bounce")
+                .duration(2000)
+                .attrTween("d", tweenPie)
+              .transition()
+                .ease("elastic")
+                .delay(function(d, i) { return 2000 + i * 50; })
+                .duration(750)
+                .attrTween("d", tweenDonut);
+
+            function tweenPie(b) {
+              b.innerRadius = 0;
+              var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
+              return function(t) { return arc(i(t)); };
+            }
+
+            function tweenDonut(b) {
+              b.innerRadius = radius * .6;
+              var i = d3.interpolate({innerRadius: 0}, b);
+              return function(t) { return arc(i(t)); };
+            }
+
         })
 
+
         .on('mouseout', tip.hide);
+
+
 
     svg.append("path") // Add the valueline path.
         .attr("class", "line")
@@ -124,8 +176,6 @@ d3.json("result.json", function(data) {
     //  .attr("cy",function(d){return yScale(d[1]);})
     //  .attr("r", 3)
     //  .attr("fill", "red");
-
-     
 
     svg.append("g")
         .attr("class", "axis")

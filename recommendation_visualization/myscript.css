@@ -27,3 +27,26 @@ path {
   border-radius: 2px;
 }
 
+
+
+
+.pieChart__blue {
+  fill: #6bb7c7; }
+
+.pieChart__red {
+  fill: #d79d91; }
+
+.pieChart__orange {
+  fill: #c78c4e; }
+
+.pieChart__yellow {
+  fill: #c7bb2d; }
+
+.pieChart__green {
+  fill: #26c73a; }
+
+.pieChart__purple {
+  fill: #7f44c7; }
+
+.pieChart__navy {
+  fill: #1187c7; }
