@@ -66,20 +66,27 @@ d3.json("result.json", function(data) {
                      .x(function(d){return xScale(d[0]);})
                      .y(function(d){return yScale(d[1]);});
 
-    var tip = d3.tip()
-		        .attr('class', 'd3-tip')
-		        // .attr('id','pie')
-		        .style('transition-duration', '0.75s')
-		        .offset([-10, 0])
-		        .html(function(d) {
-		          // return "<strong>People at this level:</strong> <span style='color:red'>" + d[1] + "</span>";
-		          // return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'> <svg id='pieChartcanvas'></svg> </div>"
-                  return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'></div>"
+    // var tip = d3.tip()
+		  //       .attr('class', 'd3-tip')
+		  //       // .attr('id','pie')
+		  //       .style('transition-duration', '0.75s')
+		  //       .offset([-10, 0])
+		  //       .html(function(d) {
+		  //         // return "<strong>People at this level:</strong> <span style='color:red'>" + d[1] + "</span>";
+		  //         // return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'> <svg id='pieChartcanvas'></svg> </div>"
+    //               return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'></div>"
 		        
-                });
+    //             });
+
+    var tip = d3.select("body")
+                .append("div")
+                .style("position", "absolute")
+                .style("z-index", "10")
+                .style("visibility", "hidden")
+                .text("a simple tooltip");
 
 
-    svg.call(tip);
+    // svg.call(tip);
 
     var widthofrect = w/jarray.length-20;
     var heightofrect;
@@ -92,76 +99,13 @@ d3.json("result.json", function(data) {
         .attr("y", function(d){return yScale(d[1]);})
         .attr("fill","skyblue")
         //tooltip part
-        .on('mouseover', function(d){
-        	tip.show();
 
-        	// var tipsvg = d3.select("#pieChart")
-        		// 		   .append("svg")
-          //                  .attr("id","tipsvg")
-        		// 		   .attr("width", 200)
- 						   // .attr("height", 50);
-
-	        // tipsvg.append("rect")
-	        //  .attr("fill", "steelblue")
-	        //  .attr("y", 10)
-	        //  .attr("width", 10)
-	        //  .attr("height", 30)
-	        //  .transition(100)
-	        //  .duration(100);
-
-            var width = 400,
-                height = 300,
-                radius = Math.min(width, height) / 2 - 10;
-
-            var pidata = d3.range(10).map(Math.random).sort(d3.descending);
-
-            var color = d3.scale.category20();
-
-            var arc = d3.svg.arc()
-                .outerRadius(radius);
-
-            var pie = d3.layout.pie();
-
-            var svg = d3.select("#pieChart").append("svg")
-                .datum(pidata)
-                .attr("width", width)
-                .attr("height", height)
-              .append("g")
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            var arcs = svg.selectAll("g.arc")
-                .data(pie)
-              .enter().append("g")
-                .attr("class", "arc");
-
-            arcs.append("path")
-                .attr("fill", function(d, i) { return color(i); })
-              .transition()
-                .ease("bounce")
-                .duration(2000)
-                .attrTween("d", tweenPie)
-              .transition()
-                .ease("elastic")
-                .delay(function(d, i) { return 2000 + i * 50; })
-                .duration(750)
-                .attrTween("d", tweenDonut);
-
-            function tweenPie(b) {
-              b.innerRadius = 0;
-              var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
-              return function(t) { return arc(i(t)); };
-            }
-
-            function tweenDonut(b) {
-              b.innerRadius = radius * .6;
-              var i = d3.interpolate({innerRadius: 0}, b);
-              return function(t) { return arc(i(t)); };
-            }
-
-        })
+        .on("mouseover", function(){return tip.style("visibility", "visible");})
+        .on("mousemove", function(){return tip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+        .on("mouseout", function(){return tip.style("visibility", "hidden");});
 
 
-        .on('mouseout', tip.hide);
+        
 
 
 
