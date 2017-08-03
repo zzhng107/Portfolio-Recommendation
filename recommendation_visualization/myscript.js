@@ -8,7 +8,7 @@ d3.json("result.json", function(data) {
     var max = d3.max(portfolio_return);
     var min = d3.min(portfolio_return);
 
-    var numofsections = 9; // 5 sections = 6 points
+    var numofsections = 7; // 5 sections = 6 points
     var numofpoints = numofsections + 1;
     var dxmark = (max-min)/numofsections;
 
@@ -30,19 +30,16 @@ d3.json("result.json", function(data) {
     }
 
     // Main canvas size
-    var w = 900,
-        h = 600;
-
+    var w = 500,
+        h = 400;
     // Scale adjustment
     var padding = 50;
-
     var xScale = d3.scale.linear()
                      .domain([0, d3.max(jarray, function(d) { return d[0]; })])
                      .range([padding, w-padding]);
     var yScale = d3.scale.linear()
                      .domain([0, d3.max(jarray, function(d) { return d[1]; })])
                      .range([h-padding,padding]);
-
     // Axis setup
     var xAxis = d3.svg.axis()
                       .scale(xScale)
@@ -53,7 +50,6 @@ d3.json("result.json", function(data) {
                       .orient("left")
                       .ticks(10);
                   // .tickFormat(formatPercent);                 
-
 
     // Drawing
     var svg = d3.select("body")
@@ -78,17 +74,137 @@ d3.json("result.json", function(data) {
 		        
     //             });
 
-    var tip = d3.select("body")
-                .append("div")
-                .style("position", "absolute")
-                .style("z-index", "10")
-                .style("visibility", "hidden")
-                .text("a simple tooltip");
+    // var tip = d3.select("body")
+    //             .append("div")
+    //             .style("position", "absolute")
+    //             .style("z-index", "10")
+    //             // .style("visibility", "hidden")
+    //             .text("a simple tooltip")
+    //             .append("svg")
+    //             .attr("width", 50)
+    //             .attr("height", 50);
+                    // .style("opacity", 0);
+
+      var width = w/2,
+          height = h/2,
+          radius = Math.min(width, height) / 2 - 10;
+      var pidata = d3.range(10).map(Math.random).sort(d3.descending);
+      var color = d3.scale.category20();
+      var arc = d3.svg.arc()
+          .outerRadius(radius);
+      var pie = d3.layout.pie();
+      var div = d3.select("body").append("svg")
+          .datum(pidata)
+          .attr("class", "tooltip")
+          .attr("width", width)
+          .attr("height", height)
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+      var arcs = div.selectAll("g.arc")
+          .data(pie)
+        .enter().append("g")
+          .attr("class", "arc");
+
+      arcs.append("path")
+          .attr("fill", function(d, i) { return color(i); })
+        .transition()
+          .ease("bounce")
+          .duration(2000)
+          .attrTween("d", tweenPie)
+        .transition()
+          .ease("elastic")
+          .delay(function(d, i) { return 2000 + i * 50; })
+          .duration(750)
+          .attrTween("d", tweenDonut);
+
+      function tweenPie(b) {
+        b.innerRadius = 0;
+        var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
+        return function(t) { return arc(i(t)); };
+      }
+
+      function tweenDonut(b) {
+        b.innerRadius = radius * .6;
+        var i = d3.interpolate({innerRadius: 0}, b);
+        return function(t) { return arc(i(t)); };
+      }
 
 
-    // svg.call(tip);
 
-    var widthofrect = w/jarray.length-20;
+
+    function mouseover() {
+      d3.select(this)
+      .transition()
+      .duration(50)
+      .style("fill","red");
+
+
+      div.transition()    
+         .duration(100)    
+         .style("opacity", .7);    
+      div.style("left", (d3.event.pageX- 34) + "px")   
+         .style("top", (d3.event.pageY - 200) + "px")
+
+      // .on("mouseover",function(){
+      //   ontip = true;
+      // })
+
+      // tip.transition()
+      //     .duration(500)
+      //     .style("opacity", 1);
+    }
+
+    function mousemove() {
+      // div.on("mouseout",function(){
+      //   // ontip = false;
+      //   div.transition()    
+      //       .duration(250)    
+      //       .style("opacity", 0);
+      // });  
+      div.style("left", (d3.event.pageX - 34) + "px")
+         .style("top", (d3.event.pageY - 200) + "px");
+    }
+
+    function mouseout() {
+    var rect = d3.select(this)
+    rect.transition()
+      .duration(100)
+      .style("fill",
+          function()
+          {
+            if(rect.classed("myself")){
+              return "pink";
+            }
+            else{
+              return "skyblue"
+            }
+          }
+      )
+
+      // div.transition()    
+      //           .duration(250)    
+      //           .style("opacity", 0);
+
+    }
+
+    function drawCircle(x, y) {
+      var squ_width = w/3;
+      var squ_height = h/3;
+        console.log('Drawing svg at', x, y);
+      var tip = svg.append("div")
+                .attr('class', 'tooltipsvg')
+                // .append("svg")
+                // .attr("x", x)
+                // .attr("y", y)
+
+                // .attr("width", squ_width)
+                // .attr("height", squ_height);
+
+
+    }
+
+
+
+    var widthofrect = w/jarray.length-15;
     var heightofrect;
     svg.selectAll("rect")
         .data(jarray)
@@ -97,19 +213,44 @@ d3.json("result.json", function(data) {
         .attr("height", function(d){return d[1]/d3.max(ydata)*(h-100);})
         .attr("x", function(d){return xScale(d[0])-widthofrect/2;})
         .attr("y", function(d){return yScale(d[1]);})
-        .attr("fill","skyblue")
+        .attr("rx",8)
+        .attr("ry",8)
+        .style("fill",
+          function(d,i){
+            if(i == Math.round(jarray.length*2/3)){
+              return "pink";
+            }
+            else{
+              return "skyblue"
+            }
+          }
+        )
+        .attr("class",
+          function(d,i){
+            if(i == Math.round(jarray.length*2/3)){
+              return "myself";
+            }
+            else{
+              return "others"
+            }
+          }
+        )
         //tooltip part
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout)
+        //onclick part
+        .on("click",function(){
+            var coords = d3.mouse(this);
+            console.log(coords);
+            drawCircle(coords[0], coords[1]);
+          }
+        );
 
-        .on("mouseover", function(){return tip.style("visibility", "visible");})
-        .on("mousemove", function(){return tip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-        .on("mouseout", function(){return tip.style("visibility", "hidden");});
 
 
-        
-
-
-
-    svg.append("path") // Add the valueline path.
+    // Add the valueline path.
+    svg.append("path") 
         .attr("class", "line")
         .attr("d", line(jarray));
 
