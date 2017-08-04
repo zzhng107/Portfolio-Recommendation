@@ -33,10 +33,19 @@ path {
   text-align: center;
   padding: 8px;
   font: 10px sans-serif;
-  background-color: gray;
-  border: solid 1px #aaa;
-  border-radius: 8px;
+  background-color: white;
+  border: solid 3px #aaa;
+  border-radius: 15px;
   pointer-events: none;
+}
+
+.g_main {
+	cursor:pointer;
+	pointer-events: all;
+}
+  
+.circle {
+  position: relative;
 }
 
 /*div.tooltip { 

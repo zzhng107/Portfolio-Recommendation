@@ -40,6 +40,14 @@ d3.json("result.json", function(data) {
     var yScale = d3.scale.linear()
                      .domain([0, d3.max(jarray, function(d) { return d[1]; })])
                      .range([h-padding,padding]);
+
+    // Tip Scale
+    var xtipScale = d3.scale.linear()
+                     .domain([0, d3.max(jarray, function(d) { return d[0]; })])
+                     .range([padding, w/2-padding]);
+    var ytipScale = d3.scale.linear()
+                     .domain([0, d3.max(jarray, function(d) { return d[1]; })])
+                     .range([h/2-padding,padding]);
     // Axis setup
     var xAxis = d3.svg.axis()
                       .scale(xScale)
@@ -86,7 +94,7 @@ d3.json("result.json", function(data) {
                     // .style("opacity", 0);
 
       var width = w/2,
-          height = h/2,
+          height = h/2;
           radius = Math.min(width, height) / 2 - 10;
       var pidata = d3.range(10).map(Math.random).sort(d3.descending);
       var color = d3.scale.category20();
@@ -98,10 +106,17 @@ d3.json("result.json", function(data) {
           .attr("class", "tooltip")
           .attr("width", width)
           .attr("height", height)
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+          // .append("g")
+          .attr("class", "g_main")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+          
+
+
+
+
       var arcs = div.selectAll("g.arc")
           .data(pie)
-        .enter().append("g")
+        // .enter().append("g")
           .attr("class", "arc");
 
       arcs.append("path")
@@ -128,8 +143,20 @@ d3.json("result.json", function(data) {
         return function(t) { return arc(i(t)); };
       }
 
+    // var div = d3.select("body").append("svg")
+    //       .attr("class", "tooltip")
+    //       .attr("width", width)
+    //       .attr("height", height)
+    //       .append('g');
 
-
+    // div.selectAll("circle")
+    //  .data(jarray)
+    //  .enter().append("circle")
+    //  .attr("class","circle")
+    //  .attr("cx",function(d){return xtipScale(d[0]);})
+    //  .attr("cy",function(d){return ytipScale(d[1]);})
+    //  .attr("r", 3)
+    //  .attr("fill", "red");
 
     function mouseover() {
       d3.select(this)
@@ -181,9 +208,8 @@ d3.json("result.json", function(data) {
       )
 
       // div.transition()    
-      //           .duration(250)    
+      //           .duration(500)    
       //           .style("opacity", 0);
-
     }
 
     function drawCircle(x, y) {
@@ -253,14 +279,6 @@ d3.json("result.json", function(data) {
     svg.append("path") 
         .attr("class", "line")
         .attr("d", line(jarray));
-
-    // svg.selectAll("circle")
-    //  .data(jarray)
-    //  .enter().append("circle")
-    //  .attr("cx",function(d){return xScale(d[0]);})
-    //  .attr("cy",function(d){return yScale(d[1]);})
-    //  .attr("r", 3)
-    //  .attr("fill", "red");
 
     svg.append("g")
         .attr("class", "axis")
