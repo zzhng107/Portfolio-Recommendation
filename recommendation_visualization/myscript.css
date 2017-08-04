@@ -1,7 +1,7 @@
 path { 
     stroke: gray;
     stroke-width: 1;
-    fill: none;
+    /*fill: none;*/
 }
 
 .axis path,

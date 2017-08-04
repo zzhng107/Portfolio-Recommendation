@@ -3,7 +3,7 @@ import numpy as np
 class Portfolios:
 
 	def __init__(self):
-		self.portfolios = abs(np.random.randn(4))
+		self.portfolios = abs(np.random.randn(6))
 		sum_ = sum(self.portfolios)
 		for i in range(len(self.portfolios)):
 			self.portfolios[i] = self.portfolios[i]/sum_

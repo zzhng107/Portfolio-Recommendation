@@ -96,40 +96,35 @@ d3.json("result.json", function(data) {
       var width = w/2,
           height = h/2;
           radius = Math.min(width, height) / 2 - 10;
-      var pidata = d3.range(10).map(Math.random).sort(d3.descending);
+      var pidata = d3.range(data["portfolio"][0].length).map(Math.random).sort(d3.descending);
       var color = d3.scale.category20();
       var arc = d3.svg.arc()
           .outerRadius(radius);
       var pie = d3.layout.pie();
       var div = d3.select("body").append("svg")
+          .style("visibility","hidden")
           .datum(pidata)
           .attr("class", "tooltip")
           .attr("width", width)
-          .attr("height", height)
-          // .append("g")
-          .attr("class", "g_main")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+          .attr("height", height);
           
+      // var tooltiptest = d3.select("body")
+      //   .append("div")
+      //   .style("position", "absolute")
+      //   .style("z-index", "10")
+      //   .style("visibility", "hidden")
+      //   .text("a simple tooltip");
 
-
-
-
-      var arcs = div.selectAll("g.arc")
+      var arcs = div.selectAll("path")
           .data(pie)
-        // .enter().append("g")
-          .attr("class", "arc");
-
-      arcs.append("path")
-          .attr("fill", function(d, i) { return color(i); })
-        .transition()
-          .ease("bounce")
-          .duration(2000)
-          .attrTween("d", tweenPie)
-        .transition()
-          .ease("elastic")
-          .delay(function(d, i) { return 2000 + i * 50; })
-          .duration(750)
-          .attrTween("d", tweenDonut);
+          .enter()
+          .append("path")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+          .attr("fill", function(d, i) { return color(i); });
+          // .on("mouseover", function(){return tooltiptest.style("visibility", "visible");})
+          // .on("mousemove", function(){return tooltiptest.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");});
+          // .on("mouseout", mouseout);
+        
 
       function tweenPie(b) {
         b.innerRadius = 0;
@@ -160,17 +155,39 @@ d3.json("result.json", function(data) {
 
     function mouseover() {
       d3.select(this)
-      .transition()
-      .duration(50)
-      .style("fill","red");
+        .transition()
+        .duration(50)
+        .style("fill","red");
 
+      var num = parseInt(d3.select(this).attr("id"));
+      // pidata = data["portfolio"][num];
+
+
+      div.datum(data["portfolio"][num])
+         .style("visibility","visible")
+      arcs.data(pie)
+          // .enter()
+          // .append("path")
+          // .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+          .attr("fill", function(d, i) { return color(i); });
 
       div.transition()    
          .duration(100)    
          .style("opacity", .7);    
       div.style("left", (d3.event.pageX- 34) + "px")   
-         .style("top", (d3.event.pageY - 200) + "px")
+         .style("top", (d3.event.pageY - 200) + "px");
 
+      // pidata = rect
+
+      arcs.transition()
+        .ease("bounce")
+        .duration(450)
+        .attrTween("d", tweenPie)
+      .transition()
+        .ease("elastic")
+        .delay(function(d, i) { return 200 + i * 50; })
+        .duration(450)
+        .attrTween("d", tweenDonut);
       // .on("mouseover",function(){
       //   ontip = true;
       // })
@@ -192,13 +209,13 @@ d3.json("result.json", function(data) {
     }
 
     function mouseout() {
-    var rect = d3.select(this)
-    rect.transition()
+    d3.select(this)
+      .transition()
       .duration(100)
       .style("fill",
           function()
           {
-            if(rect.classed("myself")){
+            if(d3.select(this).classed("myself")){
               return "pink";
             }
             else{
@@ -212,29 +229,30 @@ d3.json("result.json", function(data) {
       //           .style("opacity", 0);
     }
 
-    function drawCircle(x, y) {
-      var squ_width = w/3;
-      var squ_height = h/3;
-        console.log('Drawing svg at', x, y);
-      var tip = svg.append("div")
-                .attr('class', 'tooltipsvg')
-                // .append("svg")
-                // .attr("x", x)
-                // .attr("y", y)
+    // function drawCircle(x, y) {
+    //   var squ_width = w/3;
+    //   var squ_height = h/3;
+    //     console.log('Drawing svg at', x, y);
+    //   var tip = svg.append("div")
+    //             .attr('class', 'tooltipsvg')
+    //             // .append("svg")
+    //             // .attr("x", x)
+    //             // .attr("y", y)
 
-                // .attr("width", squ_width)
-                // .attr("height", squ_height);
-
-
-    }
+    //             // .attr("width", squ_width)
+    //             // .attr("height", squ_height);
 
 
+    // }
 
     var widthofrect = w/jarray.length-15;
     var heightofrect;
     svg.selectAll("rect")
         .data(jarray)
-        .enter().append("rect")  
+        .enter().append("rect")
+        .attr("id",function(d,i){
+          return i;
+        })
         .attr("width", widthofrect)
         .attr("height", function(d){return d[1]/d3.max(ydata)*(h-100);})
         .attr("x", function(d){return xScale(d[0])-widthofrect/2;})
@@ -264,19 +282,20 @@ d3.json("result.json", function(data) {
         //tooltip part
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseout", mouseout)
-        //onclick part
-        .on("click",function(){
-            var coords = d3.mouse(this);
-            console.log(coords);
-            drawCircle(coords[0], coords[1]);
-          }
-        );
+        .on("mouseout", mouseout);
 
-
+        // // onclick part
+        // .on("click",function(){
+        //     var coords = d3.mouse(this);
+        //     console.log(coords);
+        //     drawCircle(coords[0], coords[1]);
+        //   }
+        // );
 
     // Add the valueline path.
-    svg.append("path") 
+    svg.append("path")
+        .attr("id","trendpath")
+        .style("fill","none")
         .attr("class", "line")
         .attr("d", line(jarray));
 
