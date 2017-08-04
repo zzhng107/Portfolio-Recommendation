@@ -30,7 +30,7 @@ d3.json("result.json", function(data) {
     }
 
     // Main canvas size
-    var w = 500,
+    var w = 400,
         h = 400;
     // Scale adjustment
     var padding = 50;
