@@ -8,4 +8,4 @@ class Portfolios:
 		for i in range(len(self.portfolios)):
 			self.portfolios[i] = self.portfolios[i]/sum_
 
-		self.portfolios_return = (np.random.randn(1)+3)/20*100
+		self.portfolios_return = (np.random.randn(1)+2.8)/20*100
