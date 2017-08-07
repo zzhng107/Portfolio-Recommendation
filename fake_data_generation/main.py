@@ -8,7 +8,7 @@ def main():
 	users = []
 	portfolios = []
 	
-	for i in range(200):
+	for i in range(1000):
 
 		users.append(Users())
 		portfolios.append(Portfolios())

@@ -8,7 +8,7 @@ d3.json("result.json", function(data) {
     var max = d3.max(portfolio_return);
     var min = d3.min(portfolio_return);
 
-    var numofsections = 7; // 5 sections = 6 points
+    var numofsections = 9; // 5 sections = 6 points
     var numofpoints = numofsections + 1;
     var dxmark = (max-min)/numofsections;
 
@@ -93,20 +93,40 @@ d3.json("result.json", function(data) {
     //             .attr("height", 50);
                     // .style("opacity", 0);
 
-      var width = w/2,
-          height = h/2;
+      var width = w/3,
+          height = h/3;
           radius = Math.min(width, height) / 2 - 10;
       var pidata = d3.range(data["portfolio"][0].length).map(Math.random).sort(d3.descending);
       var color = d3.scale.category20();
       var arc = d3.svg.arc()
           .outerRadius(radius);
       var pie = d3.layout.pie();
-      var div = d3.select("body").append("svg")
-          .style("visibility","hidden")
+      var div = d3.select("body")
+          // .append("div")
+          // .html(function(d) {
+          //         // return "<strong>People at this level:</strong> <span style='color:red'>" + d[1] + "</span>";
+          //         // return "<p>This is a SVG inside a tooltip:</p> <div id='pieChart'> <svg id='pieChartcanvas'></svg> </div>"
+          //         return "<p>tooltip:</p>";
+                
+          //       })
+          .append("svg")
+          .style("opacity","0")
           .datum(pidata)
           .attr("class", "tooltip")
           .attr("width", width)
           .attr("height", height);
+          
+
+        var textlabel = div.append("text")
+                        // .text(username[0])
+                        .attr("x",width/5)
+                        .attr("y",height/11)
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "12px")
+                        .attr("fill", "gray")
+                        .style("bold","true");
+          
+
           
       // var tooltiptest = d3.select("body")
       //   .append("div")
@@ -119,7 +139,7 @@ d3.json("result.json", function(data) {
           .data(pie)
           .enter()
           .append("path")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+          .attr("transform", "translate(" + width / 2 + "," + height / 1.75 + ")")
           .attr("fill", function(d, i) { return color(i); });
           // .on("mouseover", function(){return tooltiptest.style("visibility", "visible");})
           // .on("mousemove", function(){return tooltiptest.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");});
@@ -160,11 +180,12 @@ d3.json("result.json", function(data) {
         .style("fill","red");
 
       var num = parseInt(d3.select(this).attr("id"));
+
       // pidata = data["portfolio"][num];
 
-
+      textlabel.text("Similar Investor #" + [num]);
       div.datum(data["portfolio"][num])
-         .style("visibility","visible")
+         .style("opacity","0.8")
       arcs.data(pie)
           // .enter()
           // .append("path")
@@ -173,9 +194,9 @@ d3.json("result.json", function(data) {
 
       div.transition()    
          .duration(100)    
-         .style("opacity", .7);    
-      div.style("left", (d3.event.pageX- 34) + "px")   
-         .style("top", (d3.event.pageY - 200) + "px");
+         .style("opacity", "0.9");    
+      div.style("left", (d3.event.pageX - 34) + "px")   
+         .style("top", (d3.event.pageY - 150) + "px");
 
       // pidata = rect
 
@@ -205,7 +226,7 @@ d3.json("result.json", function(data) {
       //       .style("opacity", 0);
       // });  
       div.style("left", (d3.event.pageX - 34) + "px")
-         .style("top", (d3.event.pageY - 200) + "px");
+         .style("top", (d3.event.pageY - 150) + "px");
     }
 
     function mouseout() {
@@ -224,9 +245,9 @@ d3.json("result.json", function(data) {
           }
       )
 
-      // div.transition()    
-      //           .duration(500)    
-      //           .style("opacity", 0);
+      div.transition()    
+                .duration(500)    
+                .style("opacity", 0);
     }
 
     // function drawCircle(x, y) {
@@ -261,7 +282,7 @@ d3.json("result.json", function(data) {
         .attr("ry",8)
         .style("fill",
           function(d,i){
-            if(i == Math.round(jarray.length*2/3)){
+            if(i == Math.round(jarray.length/2+1)){
               return "pink";
             }
             else{
@@ -271,7 +292,7 @@ d3.json("result.json", function(data) {
         )
         .attr("class",
           function(d,i){
-            if(i == Math.round(jarray.length*2/3)){
+            if(i == Math.round(jarray.length/2+1)){
               return "myself";
             }
             else{
@@ -284,7 +305,7 @@ d3.json("result.json", function(data) {
         .on("mousemove", mousemove)
         .on("mouseout", mouseout);
 
-        // // onclick part
+        // onclick part
         // .on("click",function(){
         //     var coords = d3.mouse(this);
         //     console.log(coords);
@@ -308,6 +329,18 @@ d3.json("result.json", function(data) {
         .attr("class", "axis")
         .attr("transform", "translate(" + padding + ",0)")
         .call(yAxis);
+
+    svg.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (padding/3) +","+(h/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+        .text("Number of Investors")
+        .style("color","gray");
+
+    svg.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (w/2) +","+(h-(padding/3))+")")  // centre below axis
+        .text("Return (%)")
+        .style("color","gray");
 
     });
 
