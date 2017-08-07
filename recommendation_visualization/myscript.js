@@ -93,8 +93,8 @@ d3.json("result.json", function(data) {
     //             .attr("height", 50);
                     // .style("opacity", 0);
 
-      var width = w/3,
-          height = h/3;
+      var width = w/2.5,
+          height = h/2.4;
           radius = Math.min(width, height) / 2 - 10;
       var pidata = d3.range(data["portfolio"][0].length).map(Math.random).sort(d3.descending);
       var color = d3.scale.category20();
@@ -119,12 +119,21 @@ d3.json("result.json", function(data) {
 
         var textlabel = div.append("text")
                         // .text(username[0])
-                        .attr("x",width/5)
+                        .attr("x",width/6.5)
                         .attr("y",height/11)
                         .attr("font-family", "sans-serif")
-                        .attr("font-size", "12px")
+                        .attr("font-size", "13px")
                         .attr("fill", "gray")
-                        .style("bold","true");
+                        .style("font-weight","bold");
+
+        var textreturn = div.append("text")
+                        // .text(username[0])
+                        .attr("x",width/3.1)
+                        .attr("y",height/1.7)
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "18px")
+                        .style("font-weight","bold");
+
           
 
           
@@ -184,6 +193,15 @@ d3.json("result.json", function(data) {
       // pidata = data["portfolio"][num];
 
       textlabel.text("Similar Investor #" + [num]);
+      textreturn.text(jarray[num][0].toFixed(2)+"%")
+                .attr("fill",function(){
+                    if(jarray[num][0]>0){
+                        return "green";
+                    }
+                    else{
+                        return "red";
+                    }
+                });
       div.datum(data["portfolio"][num])
          .style("opacity","0.8")
       arcs.data(pie)
